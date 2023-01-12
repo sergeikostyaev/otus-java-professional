@@ -23,7 +23,6 @@ allprojects {
         }
     }
 
-//./gradlew -q managedVersions
     tasks.register("managedVersions") {
         doLast {
             dependencyManagement.managedVersions.each {
