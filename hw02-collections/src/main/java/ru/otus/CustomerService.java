@@ -11,13 +11,17 @@ public class CustomerService {
 
     public Map.Entry<Customer, String> getSmallest() {
         Map.Entry<Customer,String> temp = treeMap.firstEntry();
-        if(temp == null) return null;
+        if(temp == null) {
+            return null;
+        }
         return new AbstractMap.SimpleImmutableEntry<>(new Customer(temp.getKey().getId(), temp.getKey().getName(), temp.getKey().getScores()), temp.getValue());
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
             Map.Entry<Customer,String> temp = treeMap.higherEntry(customer);
-            if(temp == null) return null;
+            if(temp == null) {
+                return null;
+            }
             return new AbstractMap.SimpleImmutableEntry<>(new Customer(temp.getKey().getId(), temp.getKey().getName(), temp.getKey().getScores()), temp.getValue());
     }
 
