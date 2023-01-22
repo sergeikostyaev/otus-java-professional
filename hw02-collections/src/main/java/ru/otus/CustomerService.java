@@ -3,10 +3,11 @@ package ru.otus;
 
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class CustomerService {
-    private static TreeMap<Customer, String> treeMap = new TreeMap<>((c1, c2) -> (int) (c1.getScores() - c2.getScores()));
+    private final NavigableMap<Customer, String> treeMap = new TreeMap<>((c1, c2) -> (int) (c1.getScores() - c2.getScores()));
 
     public Map.Entry<Customer, String> getSmallest() {
         Map.Entry<Customer,String> temp = treeMap.firstEntry();
