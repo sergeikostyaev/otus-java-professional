@@ -35,7 +35,7 @@ public class Main {
             System.out.println(" ");
 
         }
-        System.out.println("Accepted: " + accepted + ", not accepted: " + nonAccepted);
+        System.out.println("Accepted: " + accepted + ", not accepted: " + nonAccepted + ", total: " + tests.size());
     }
     private static<T> void runMethodList(List<Method> al, Object invoker, T parameter) throws InvocationTargetException, IllegalAccessException {
         if(parameter == null){
