@@ -11,16 +11,20 @@ public class Main {
        runTest("ru.otus.Test");
     }
     private static void runTest(String s) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+
+        Main m = new Main();
         Class<?> clazz = Class.forName(s);
-        List<Method> before = getMethodList(clazz.getDeclaredConstructor().newInstance(),MyBeforeAnnotation.class);
-        List<Method> after = getMethodList(clazz.getDeclaredConstructor().newInstance(),MyAfterAnnotation.class);
-        List<Method> tests = getMethodList(clazz.getDeclaredConstructor().newInstance(),MyTestAnnotation.class);
+
+        List<Method> before = m.getMethodList(clazz.getDeclaredConstructor().newInstance(),MyBeforeAnnotation.class);
+        List<Method> after = m.getMethodList(clazz.getDeclaredConstructor().newInstance(),MyAfterAnnotation.class);
+        List<Method> tests = m.getMethodList(clazz.getDeclaredConstructor().newInstance(),MyTestAnnotation.class);
         int accepted = 0;
         int nonAccepted = 0;
 
         for (Method test : tests) {
             var invoker = clazz.getDeclaredConstructor().newInstance();
-            runMethodList(before, invoker, null);
+
+            m.runMethodList(before, invoker, null);
 
             try {
                 test.invoke(invoker, null);
@@ -28,7 +32,8 @@ public class Main {
             } catch (Exception e) {
                 nonAccepted++;
             }
-            runMethodList(after, invoker, null);
+
+            m.runMethodList(after, invoker, null);
 
             System.out.println(" ");
             System.out.println("---------------------------------------------------------");
@@ -37,7 +42,8 @@ public class Main {
         }
         System.out.println("Accepted: " + accepted + ", not accepted: " + nonAccepted + ", total: " + tests.size());
     }
-    private static<T> void runMethodList(List<Method> al, Object invoker, T parameter) throws InvocationTargetException, IllegalAccessException {
+
+    private <T> void runMethodList(List<Method> al, Object invoker, T parameter) throws InvocationTargetException, IllegalAccessException {
         if(parameter == null){
             for(Method method : al){
                 method.invoke(invoker, null);
@@ -49,7 +55,7 @@ public class Main {
         }
     }
 
-    private static <T> ArrayList<Method> getMethodList(T clazz, Class<? extends Annotation> clazz2){
+    private <T> ArrayList<Method> getMethodList(T clazz, Class<? extends Annotation> clazz2){
         Class<?> t = clazz.getClass();
         ArrayList<Method> al = new ArrayList<>();
         var field = t.getDeclaredMethods();
