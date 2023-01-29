@@ -10,16 +10,11 @@ public class Main {
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
        runTest("ru.otus.Test");
     }
-
-
-
-
-
     private static void runTest(String s) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         Class<?> clazz = Class.forName(s);
-        List<Method> before = getBeforeList(clazz.getDeclaredConstructor().newInstance());
-        List<Method> after = getAfterList(clazz.getDeclaredConstructor().newInstance());
-        List<Method> tests = getTestsList(clazz.getDeclaredConstructor().newInstance());
+        List<Method> before = getMethodList(clazz.getDeclaredConstructor().newInstance(),MyBeforeAnnotation.class);
+        List<Method> after = getMethodList(clazz.getDeclaredConstructor().newInstance(),MyAfterAnnotation.class);
+        List<Method> tests = getMethodList(clazz.getDeclaredConstructor().newInstance(),MyTestAnnotation.class);
         int accepted = 0;
         int nonAccepted = 0;
 
@@ -54,35 +49,12 @@ public class Main {
         }
     }
 
-    private static <T> ArrayList<Method> getBeforeList(T clazz){
+    private static <T> ArrayList<Method> getMethodList(T clazz, Class<? extends Annotation> clazz2){
         Class<?> t = clazz.getClass();
         ArrayList<Method> al = new ArrayList<>();
         var field = t.getDeclaredMethods();
         for (Method method : field) {
-            if (method.isAnnotationPresent(MyBeforeAnnotation.class)) {
-                al.add(method);
-            }
-        }
-        return al;
-    }
-
-    private static <T> ArrayList<Method> getAfterList(T clazz){
-        Class<?> t = clazz.getClass();
-        ArrayList<Method> al = new ArrayList<>();
-        var field = t.getDeclaredMethods();
-        for (Method method : field) {
-            if (method.isAnnotationPresent(MyAfterAnnotation.class)) {
-                al.add(method);
-            }
-        }
-        return al;
-    }
-    private static <T> ArrayList<Method> getTestsList(T clazz){
-        Class<?> t = clazz.getClass();
-        ArrayList<Method> al = new ArrayList<>();
-        var field = t.getDeclaredMethods();
-        for (Method method : field) {
-            if (method.isAnnotationPresent(MyTestAnnotation.class)) {
+            if (method.isAnnotationPresent(clazz2)) {
                 al.add(method);
             }
         }
