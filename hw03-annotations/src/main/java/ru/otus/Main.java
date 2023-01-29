@@ -8,9 +8,10 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-       runTest("ru.otus.Test");
+        Main m = new Main();
+        m.runTest("ru.otus.Test");
     }
-    private static void runTest(String s) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    private void runTest(String s) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
 
         Main m = new Main();
         Class<?> clazz = Class.forName(s);
