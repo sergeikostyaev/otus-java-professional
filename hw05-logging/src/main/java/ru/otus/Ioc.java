@@ -43,6 +43,7 @@ public class Ioc {
                                 System.out.print(o + " ");
                             }
                             System.out.println(" ");
+                            break;
                         }
                     }
 
