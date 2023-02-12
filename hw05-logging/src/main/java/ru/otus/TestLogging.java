@@ -38,4 +38,11 @@ public class TestLogging implements TestLoggingInterface{
     public void calculation(String a, String b) {
 
     }
+
+    @Log
+    @Override
+    public void calculation(String a, int b) {
+
+    }
+
 }

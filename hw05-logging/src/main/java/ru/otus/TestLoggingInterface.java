@@ -13,5 +13,6 @@ public interface TestLoggingInterface {
     void calculation(String a);
 
     void calculation(String a, String b);
+    void calculation(String a, int b);
 
 }

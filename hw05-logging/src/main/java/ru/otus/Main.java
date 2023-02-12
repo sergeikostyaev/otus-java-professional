@@ -10,5 +10,6 @@ public class Main {
         tli.calculation(5, "String", "String");
         tli.calculation("String");
         tli.calculation("String", "String");
+        tli.calculation("String",1);
     }
 }
