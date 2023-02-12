@@ -10,18 +10,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-class Ioc {
+public class Ioc {
 
-    private Ioc() {
+    public Ioc() {
     }
 
-    static TestLoggingInterface createTestLogging() {
+    TestLoggingInterface createTestLogging() {
         InvocationHandler handler = new DemoInvocationHandler(new TestLogging());
         return (TestLoggingInterface) Proxy.newProxyInstance(Ioc.class.getClassLoader(),
                 new Class<?>[]{TestLoggingInterface.class}, handler);
     }
 
-    static class DemoInvocationHandler implements InvocationHandler {
+    class DemoInvocationHandler implements InvocationHandler {
         private final TestLoggingInterface myClass;
 
         DemoInvocationHandler(TestLoggingInterface myClass) {
