@@ -21,21 +21,18 @@ public class Ioc {
     static class DemoInvocationHandler implements InvocationHandler {
         private final TestLoggingInterface myClass;
 
+        private final ArrayList <Method> al;
+
         DemoInvocationHandler(TestLoggingInterface myClass) {
+            al = Arrays.stream(myClass.getClass().getDeclaredMethods()).collect(Collectors.toCollection(ArrayList::new));
             this.myClass = myClass;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-            ArrayList<Method> al = Arrays.stream(myClass.getClass().getDeclaredMethods()).collect(Collectors.toCollection(ArrayList::new));
-            String s1 = Arrays.stream(method.getParameterTypes()).toList() + method.getName();
-
             for (Method m : al) {
-
-                String s2 = Arrays.stream(m.getParameterTypes()).toList() + method.getName();
-
-                if (m.getParameters().length == method.getParameters().length && s1.equals(s2) && m.isAnnotationPresent(Log.class)) {
+                if (m.isAnnotationPresent(Log.class) && (Arrays.stream(m.getParameters()).toList()+m.getName()).equals(Arrays.stream(method.getParameters()).toList() + method.getName())) {
                     System.out.print("executed method: " + method.getName() + ", params: ");
                     for (Object o : args) {
                         System.out.print(o + " ");

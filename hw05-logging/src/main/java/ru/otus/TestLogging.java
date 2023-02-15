@@ -4,7 +4,6 @@ public class TestLogging implements TestLoggingInterface{
     TestLogging(){
 
     }
-
     @Log
     @Override
     public void calculation(int a) {
