@@ -2,7 +2,10 @@ package ru.otus.model;
 
 import java.util.List;
 
-public class ObjectForMessage {
+import static java.util.List.copyOf;
+
+
+public class ObjectForMessage implements Cloneable {
     private List<String> data;
 
     public List<String> getData() {
@@ -11,5 +14,14 @@ public class ObjectForMessage {
 
     public void setData(List<String> data) {
         this.data = data;
+    }
+
+    @Override
+    public ObjectForMessage clone() {
+        ObjectForMessage copy = new ObjectForMessage();
+        if (this.getData() != null) {
+            copy.setData(copyOf(this.getData()));
+        }
+        return copy;
     }
 }

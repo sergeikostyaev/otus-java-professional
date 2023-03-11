@@ -1,6 +1,6 @@
 package ru.otus.model;
 
-public class Message {
+public class Message implements Cloneable{
     private final long id;
     private final String field1;
     private final String field2;
@@ -17,11 +17,8 @@ public class Message {
     private final ObjectForMessage field13;
 
 
-    //todo: 1. Добавить поля field11 - field13 (для field13 используйте класс ObjectForMessage)
-
-
-    public Message(long id, String field1, String field2, String field3, String field4, String field5, String field6,
-                   String field7, String field8, String field9, String field10,
+    public Message(long id, String field1, String field2, String field3, String field4, String field5,
+                   String field6, String field7, String field8, String field9, String field10,
                    String field11, String field12, ObjectForMessage field13) {
         this.id = id;
         this.field1 = field1;
@@ -130,8 +127,35 @@ public class Message {
                 ", field10='" + field10 + '\'' +
                 ", field10='" + field11 + '\'' +
                 ", field10='" + field12 + '\'' +
-                ", field10='" + field13 + '\'' +
+                ", field10='" + field13.getData() + '\'' +
                 '}';
+    }
+
+    @Override
+    public Message clone() {
+
+        ObjectForMessage objectForMessage = null;
+
+        if(this.field13 != null){
+            objectForMessage = this.field13.clone();
+        }
+
+        Message message = new Message.Builder(this.id)
+                .field1(this.field1)
+                .field2(this.field2)
+                .field3(this.field3)
+                .field5(this.field5)
+                .field6(this.field6)
+                .field7(this.field7)
+                .field8(this.field3)
+                .field9(this.field3)
+                .field10(this.field3)
+                .field11(this.field3)
+                .field12(this.field3)
+                .field13(objectForMessage)
+                .build();
+
+        return message;
     }
 
     public static class Builder {
@@ -229,12 +253,12 @@ public class Message {
         }
 
         public Builder field12(String field12) {
-            this.field10 = field10;
+            this.field12 = field12;
             return this;
         }
 
-        public Builder field13(String field13) {
-            this.field10 = field10;
+        public Builder field13(ObjectForMessage field13) {
+            this.field13 = field13;
             return this;
         }
 
