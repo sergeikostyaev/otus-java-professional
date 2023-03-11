@@ -125,9 +125,9 @@ public class Message implements Cloneable{
                 ", field8='" + field8 + '\'' +
                 ", field9='" + field9 + '\'' +
                 ", field10='" + field10 + '\'' +
-                ", field10='" + field11 + '\'' +
-                ", field10='" + field12 + '\'' +
-                ", field10='" + field13.getData() + '\'' +
+                ", field11='" + field11 + '\'' +
+                ", field12='" + field12 + '\'' +
+                ", field13='" + field13.getData() + '\'' +
                 '}';
     }
 
@@ -147,11 +147,11 @@ public class Message implements Cloneable{
                 .field5(this.field5)
                 .field6(this.field6)
                 .field7(this.field7)
-                .field8(this.field3)
-                .field9(this.field3)
-                .field10(this.field3)
-                .field11(this.field3)
-                .field12(this.field3)
+                .field8(this.field8)
+                .field9(this.field9)
+                .field10(this.field10)
+                .field11(this.field11)
+                .field12(this.field12)
                 .field13(objectForMessage)
                 .build();
 
