@@ -12,7 +12,7 @@ public class  ProcessorAggregator implements Processor {
     @Override
     public Map<String, Double> process(List<Measurement> data) {
 
-        Map<String,Double> map = new TreeMap<>((c1,c2) -> c1.compareTo(c2));
+        Map<String,Double> map = new TreeMap<>(String::compareTo);
 
         data.stream().forEach(element -> {
             if(map.containsKey(element.getName())){
