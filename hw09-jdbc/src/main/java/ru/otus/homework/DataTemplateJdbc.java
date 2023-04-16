@@ -7,13 +7,28 @@ import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Manager;
 import ru.otus.homework.impls.EntityClassMetaDataImpl;
 import ru.otus.homework.impls.EntitySQLMetaDataImpl;
+import ru.otus.core.repository.DataTemplate;
+import ru.otus.core.repository.DataTemplateException;
+import ru.otus.core.repository.executor.DbExecutor;
+import ru.otus.crm.model.Client;
+import ru.otus.crm.model.Manager;
+import ru.otus.homework.impls.EntityClassMetaDataImpl;
+import ru.otus.homework.impls.EntitySQLMetaDataImpl;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,19 +51,19 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     @Override
     public Optional<T> findById(Connection connection, long id) {
         var constructor = entityClassMetaData.getConstructor();
-        List<Object> args = new ArrayList<>();
-        List<Field> fields = new ArrayList<>();
+        var args = new ArrayList<>();
+        List<Field> fields = entityClassMetaData.getAllFields();
 
         return dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectByIdSql(), List.of(id), rs -> {
             try {
                 if (rs.next()) {
 
-                    for(Field f : fields){
+                    for (Field f : fields) {
                         args.add(rs.getObject(rs.findColumn(f.getName())));
                     }
                     try {
-                        return (T) constructor.newInstance(args.stream().toArray());
-                    }catch (Exception e){
+                        return constructor.newInstance(args.stream().toArray());
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -61,53 +76,77 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
     @Override
     public List<T> findAll(Connection connection) {
-        throw new UnsupportedOperationException();
+        var constructor = entityClassMetaData.getConstructor();
+        List<T> list = new ArrayList<>();
+        List<Field> fields = entityClassMetaData.getAllFields();
+        var args = new ArrayList<>();
+
+        return dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectAllSql(), Collections.emptyList(), rs -> {
+
+            try {
+                while (rs.next()) {
+                    for (Field f : fields) {
+                        args.add(rs.getObject(rs.findColumn(f.getName())));
+                    }
+                    try {
+                        list.add(constructor.newInstance(args.stream().toArray()));
+                        args.clear();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                return list;
+
+            } catch (SQLException e) {
+                throw new DataTemplateException(e);
+            }
+        }).orElseThrow(() -> new RuntimeException("Unexpected error"));
     }
 
     @Override
     public long insert(Connection connection, T client) {
-
         List<Object> params = new ArrayList<>();
-        List<Field> fieldsWithoutId = entityClassMetaData.getFieldsWithoutId();
-        for (Field f : fieldsWithoutId) {
-            try {
+        var fields = entityClassMetaData.getFieldsWithoutId();
+
+        try {
+            for (Field f : fields) {
                 f.setAccessible(true);
                 params.add(f.get(client));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
         try {
             return dbExecutor.executeStatement(connection, entitySQLMetaData.getInsertSql(), params);
         } catch (Exception e) {
             throw new DataTemplateException(e);
         }
-
     }
 
     @Override
     public void update(Connection connection, T client) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void main(String[] args) {
-
-        EntityClassMetaData entityClassMetaDataClient = new EntityClassMetaDataImpl(Manager.class);
-        EntitySQLMetaData entitySQLMetaDataClient = new EntitySQLMetaDataImpl(entityClassMetaDataClient);
-
-        var constructor = entityClassMetaDataClient.getConstructor();
-        Object [] s = {1488,"b","c"};
+        List<Object> params = new ArrayList<>();
+        var fields = entityClassMetaData.getFieldsWithoutId();
         try {
-            var a = (Manager)constructor.newInstance(s);
-            System.out.println(s);
-            System.out.println(a.getLabel());
+            for (Field f : fields) {
+                f.setAccessible(true);
+                params.add(f.get(client));
+            }
+            var idField = entityClassMetaData.getIdField();
+            idField.setAccessible(true);
+            params.add(idField.get(client));
         } catch (Exception e) {
-
+            throw new RuntimeException(e);
         }
 
+        try {
 
+            dbExecutor.executeStatement(connection, entitySQLMetaData.getUpdateSql(), params);
+        } catch (Exception e) {
+            throw new DataTemplateException(e);
+        }
+        throw new UnsupportedOperationException();
     }
 }
-
-
-//initArgsList.add(rs.getObject(rs.findColumn(field.getName())));

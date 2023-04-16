@@ -57,13 +57,15 @@ public class HomeWork {
         var managerSecondSelected = dbServiceManager.getManager(managerSecond.getNo())
                 .orElseThrow(() -> new RuntimeException("Manager not found, id:" + managerSecond.getNo()));
         log.info("managerSecondSelected:{}", managerSecondSelected);
+
+        System.out.println(dbServiceManager.findAll());
     }
 
     private static void flywayMigrations(DataSource dataSource) {
         log.info("db migration started...");
         var flyway = Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:/db/migrationhw")
+                .locations("classpath:migration2")
                 .load();
         flyway.migrate();
         log.info("db migration finished.");
