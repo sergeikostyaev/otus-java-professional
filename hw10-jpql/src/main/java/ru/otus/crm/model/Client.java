@@ -33,7 +33,6 @@ public class Client implements Cloneable {
     private List<Phone> phones;
 
 
-
     public Client(String name) {
         this.id = null;
         this.name = name;
@@ -48,19 +47,29 @@ public class Client implements Cloneable {
         this.id = id;
         this.name = name;
         this.address = address;
-        this.phones = new ArrayList<>();
-        phones.stream().forEach(p ->p.setClient(this));
+        if(phones == null){
+            this.phones = null;
+        }else {
+            this.phones = new ArrayList<>();
+            phones.stream().forEach(p -> p.setClient(this));
+        }
     }
 
     @Override
     public Client clone() {
-        Address copyAdress = new Address(address.getId(), address.getStreet());
-        List<Phone> clonedPhones = new ArrayList<>();
-        phones.stream().forEach(p ->{
-            clonedPhones.add(new Phone(p.getId(), p.getNumber()));
-        });
+        Address copyAddress = null;
+        List<Phone> clonedPhones = null;
+        if (address != null) {
+             copyAddress = new Address(address.getId(), address.getStreet());
+        }
+        if(phones != null) {
 
-        return new Client(this.id, this.name, copyAdress, clonedPhones);
+            for(Phone p : phones){
+                clonedPhones.add(new Phone(p.getId(), p.getNumber()));
+            }
+
+        }
+        return new Client(this.id, this.name, copyAddress, clonedPhones);
     }
 
     @Override

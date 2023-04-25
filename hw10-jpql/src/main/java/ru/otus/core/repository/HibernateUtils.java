@@ -21,7 +21,7 @@ public final class HibernateUtils {
         Metadata metadata = metadataSources.getMetadataBuilder().build();
         return metadata.getSessionFactoryBuilder().build();
     }
-
+ 
     private static StandardServiceRegistry createServiceRegistry(Configuration configuration) {
         return new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
