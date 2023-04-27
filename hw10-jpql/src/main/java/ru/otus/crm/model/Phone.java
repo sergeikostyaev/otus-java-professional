@@ -28,4 +28,8 @@ public class Phone {
         this.number = number;
     }
 
+    public void setClient(Client client) {
+        this.client = client;
+        client.getPhones().add(this);
+    }
 }
