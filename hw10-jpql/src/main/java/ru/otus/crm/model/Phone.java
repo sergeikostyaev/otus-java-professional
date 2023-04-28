@@ -13,8 +13,10 @@ import lombok.*;
 public class Phone {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "phone_id")
+    @SequenceGenerator(name = "client_gen", sequenceName = "client_seq",
+            initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_gen")
+    @Column(name = "id")
     private Long id;
     @Column(name = "number")
     private String number;

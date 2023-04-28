@@ -68,6 +68,7 @@ class DataTemplateHibernateTest extends AbstractHibernateTest {
                     return Optional.of(res.clone());
                 }
         );
+
         assertThat(loadedClient).isPresent().get().usingRecursiveComparison().isEqualTo(updatedClient);
 
         //when
