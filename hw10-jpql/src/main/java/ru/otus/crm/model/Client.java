@@ -17,9 +17,9 @@ import java.util.List;
 public class Client implements Cloneable {
 
     @Id
-    @SequenceGenerator(name = "phone_gen", sequenceName = "phone_seq",
+    @SequenceGenerator(name = "client_gen", sequenceName = "client_seq",
             initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "phone_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_gen")
     @Column(name = "id")
     private Long id;
 
@@ -49,7 +49,9 @@ public class Client implements Cloneable {
         this.name = name;
         this.address = address;
         this.phones = new ArrayList<>();
-        phones.stream().forEach(p ->p.setClient(this));
+        phones.stream().forEach(p -> {
+            p.setClient(this);
+        });
     }
 
     @Override
@@ -72,5 +74,7 @@ public class Client implements Cloneable {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+
 }
 
