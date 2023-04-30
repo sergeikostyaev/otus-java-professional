@@ -22,9 +22,6 @@ public class Main {
     public static void main(String[] args) {
 
 
-
-
-
         var configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
 
         var dbUrl = configuration.getProperty("hibernate.connection.url");
@@ -41,21 +38,57 @@ public class Main {
 ///
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
 
-        var client = new Client(null, "Petir", new Address(null, "AnyStreet"), List.of(new Phone(null, "13-555-22"),
-                new Phone(null, "14-666-333")));
+//        var client = new Client(null, "Petir", new Address(null, "AnyStreet"), List.of(new Phone(null, "13-555-22"),
+//                new Phone(null, "14-666-333")));
 
-        dbServiceClient.saveClient(client);
+//        dbServiceClient.saveClient(client);
+//        var loadedSavedClient = dbServiceClient.getClient(1);
+//        System.out.println(loadedSavedClient.get().getAddress().getStreet());
+        dbServiceClient.setCacheStatus(false);
+        var limit = 150;
+        for (var idx = 1; idx < limit; idx++) {
+            var client = new Client(Long.valueOf(idx), "Petir"+idx, new Address(null, "AnyStreet"+idx), List.of(new Phone(null, "13-555-22"+idx),
+                    new Phone(null, "14-666-333"+idx)));
+            dbServiceClient.saveClient(client);
+        }
 
-        var loadedSavedClient = dbServiceClient.getClient(1);
-
-        System.out.println(loadedSavedClient.get().getAddress().getStreet());
-
-
-
-
+        long startOff = System.currentTimeMillis();
+        for (var idx = 1; idx < limit; idx++) {
+            System.out.println(dbServiceClient.getClient(idx));
+        }
+        long finishOff = System.currentTimeMillis();
 
 
 
+        dbServiceClient.setCacheStatus(true);
+        limit = 300;
+        for (var idx = 1; idx < limit; idx++) {
 
+            var client = new Client(Long.valueOf(idx), "Petir"+idx, new Address(null, "AnyStreet"+idx), List.of(new Phone(null, "13-555-22"+idx),
+                    new Phone(null, "14-666-333"+idx)));
+            dbServiceClient.saveClient(client);
+        }
+
+        long startOn = System.currentTimeMillis();
+        for (var idx = 1; idx < limit; idx++) {
+
+            System.out.println(dbServiceClient.getClient(idx));
+        }
+        long finishOn = System.currentTimeMillis();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        System.out.println("Cache off : " + (finishOff-startOff) + "\nCache on : " + (finishOn-startOn));
     }
 }

@@ -74,29 +74,30 @@ class A {
     public static void main(String[] args) {
 
         MyCache<String, A> cache = new MyCache<>();
-        var limit = 100000000;
-        for (var idx = 0; idx < limit; idx++) {
-
-            long totalMemory = Runtime.getRuntime().totalMemory();
-            long freeMemory = Runtime.getRuntime().freeMemory();
-            long usedMemory = totalMemory - freeMemory;
-            double usedMemoryPercent = (double) usedMemory / totalMemory * 100;
-            System.out.println(usedMemoryPercent);
-
-
-
-            var key = String.valueOf(idx); // при таком подходе значение удалится.
-            cache.put(key, new A(idx));
-        }
-
-        System.out.println(cache.getWeakHashMap().size());
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        logger.info("after gc: {}", cache.getWeakHashMap().size());
+        System.out.println(cache.get("sdsd"));
+//        var limit = 100000000;
+//        for (var idx = 0; idx < limit; idx++) {
+//
+//            long totalMemory = Runtime.getRuntime().totalMemory();
+//            long freeMemory = Runtime.getRuntime().freeMemory();
+//            long usedMemory = totalMemory - freeMemory;
+//            double usedMemoryPercent = (double) usedMemory / totalMemory * 100;
+//            System.out.println(usedMemoryPercent);
+//
+//
+//
+//            var key = String.valueOf(idx); // при таком подходе значение удалится.
+//            cache.put(key, new A(idx));
+//        }
+//
+//        System.out.println(cache.getWeakHashMap().size());
+//
+//        try {
+//            Thread.sleep(100);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        logger.info("after gc: {}", cache.getWeakHashMap().size());
 
 
 

@@ -2,6 +2,8 @@ package ru.otus.hibernate.crm.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.cache.HwCache;
+import ru.otus.cache.MyCache;
 import ru.otus.hibernate.core.repository.DataTemplate;
 import ru.otus.hibernate.core.sessionmanager.TransactionManager;
 import ru.otus.hibernate.crm.model.Client;
@@ -14,14 +16,21 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
+    private final HwCache<String, Client> cache;
+    private boolean cacheStatus;
 
     public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
+        cache = new MyCache<String,Client>();
+        cacheStatus = false;
     }
 
     @Override
     public Client saveClient(Client client) {
+        if(cacheStatus == true){
+            cache.put(client.getId().toString(), client);
+        }
         return transactionManager.doInTransaction(session -> {
             var clientCloned = client.clone();
             if (client.getId() == null) {
@@ -37,6 +46,12 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     @Override
     public Optional<Client> getClient(long id) {
+        if(cacheStatus){
+            var client = cache.get(String.valueOf(id));
+            if(client != null){
+                return Optional.of(client);
+            }
+        }
         return transactionManager.doInReadOnlyTransaction(session -> {
             var clientOptional = clientDataTemplate.findById(session, id);
             log.info("client: {}", clientOptional);
@@ -51,5 +66,9 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("clientList:{}", clientList);
             return clientList;
        });
+    }
+
+    public void setCacheStatus(boolean b){
+        cacheStatus = b;
     }
 }
