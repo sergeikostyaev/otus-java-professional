@@ -19,10 +19,10 @@ public class DbServiceClientImpl implements DBServiceClient {
     private final HwCache<String, Client> cache;
     private boolean cacheStatus;
 
-    public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
+    public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate, HwCache<String, Client> hwCache) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
-        cache = new MyCache<String,Client>();
+        cache = hwCache;
         cacheStatus = false;
     }
 
@@ -55,6 +55,8 @@ public class DbServiceClientImpl implements DBServiceClient {
         return transactionManager.doInReadOnlyTransaction(session -> {
             var clientOptional = clientDataTemplate.findById(session, id);
             log.info("client: {}", clientOptional);
+            var client = clientOptional.get();
+            cache.put(client.getId().toString(), client);
             return clientOptional;
         });
     }

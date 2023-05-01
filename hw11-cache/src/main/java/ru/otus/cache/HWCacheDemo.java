@@ -18,15 +18,24 @@ public class HWCacheDemo {
         HwListener<String, Integer> listener = new HwListener<String, Integer>() {
             @Override
             public void notify(String key, Integer value, String action) {
-                logger.info("key:{}, value:{}, action: {}", key, value, action);
+                logger.info("LISTENER 1 : key:{}, value:{}, action: {}", key, value, action);
+            }
+        };
+
+        HwListener<String, Integer> listener1 = new HwListener<String, Integer>() {
+            @Override
+            public void notify(String key, Integer value, String action) {
+                logger.info("LISTENER 2 : key:{}, value:{}, action: {}", key, value, action);
             }
         };
 
         cache.addListener(listener);
+        cache.addListener(listener1);
         cache.put("1", 1);
 
         logger.info("getValue:{}", cache.get("1"));
         cache.remove("1");
         cache.removeListener(listener);
+        cache.removeListener(listener1);
     }
 }

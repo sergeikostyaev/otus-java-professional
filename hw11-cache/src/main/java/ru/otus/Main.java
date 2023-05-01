@@ -3,6 +3,8 @@ package ru.otus;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.cache.HwCache;
+import ru.otus.cache.MyCache;
 import ru.otus.hibernate.core.repository.DataTemplateHibernate;
 import ru.otus.hibernate.core.repository.HibernateUtils;
 import ru.otus.hibernate.core.sessionmanager.TransactionManagerHibernate;
@@ -35,8 +37,10 @@ public class Main {
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
 ///
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
+
+        var cache = new MyCache<String, Client>();
 ///
-        var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
+        var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate,cache);
 
 //        var client = new Client(null, "Petir", new Address(null, "AnyStreet"), List.of(new Phone(null, "13-555-22"),
 //                new Phone(null, "14-666-333")));
