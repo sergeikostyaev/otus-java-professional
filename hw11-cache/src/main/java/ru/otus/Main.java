@@ -80,19 +80,6 @@ public class Main {
         }
         long finishOn = System.currentTimeMillis();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         System.out.println("Cache off : " + (finishOff-startOff) + "\nCache on : " + (finishOn-startOn));
     }
 }
