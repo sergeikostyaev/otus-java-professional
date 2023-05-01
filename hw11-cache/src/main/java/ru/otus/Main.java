@@ -65,7 +65,7 @@ public class Main {
 
 
         dbServiceClient.setCacheStatus(true);
-        limit = 300;
+        limit *= 2;
         for (var idx = 1; idx < limit; idx++) {
 
             var client = new Client(Long.valueOf(idx), "Petir"+idx, new Address(null, "AnyStreet"+idx), List.of(new Phone(null, "13-555-22"+idx),
