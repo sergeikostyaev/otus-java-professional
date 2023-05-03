@@ -21,16 +21,6 @@ public class MyCache<K, V> implements HwCache<K, V> {
         this.listeners = new ArrayList<>();
     }
 
-    HwListener<K, V> hwListener;
-
-    public static void main(String[] args) {
-        MyCache<Integer, String> myCache = new MyCache<>();
-        myCache.put(1,"1");
-        System.out.println(myCache.get(1));
-
-        var a = new WeakReference<Integer>(2);
-        System.out.println(a.get());
-    }
 
     @Override
     public void put(K key, V value) {
