@@ -1,29 +1,41 @@
 package ru.otus.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ru.otus.helpers.FileSystemHelper;
+import ru.otus.hibernate.crm.service.DBServiceClient;
 import ru.otus.services.TemplateProcessor;
-import ru.otus.servlet.UsersApiServlet;
-import ru.otus.servlet.UsersServlet;
+import ru.otus.services.AuthService;
+import ru.otus.servlet.AuthorizationFilter;
+import ru.otus.servlet.LoginServlet;
+import ru.otus.servlet.ClientsApiServlet;
+import ru.otus.servlet.ClientsServlet;
+
+import java.util.Arrays;
 
 
-public class WebServerSimple implements WebServer {
+public class WebServerImpl implements WebServer {
     private static final String START_PAGE_NAME = "index.html";
     private static final String COMMON_RESOURCES_DIR = "static";
-    private final Gson gson;
+    private final ObjectMapper mapper;
     protected final TemplateProcessor templateProcessor;
     private final Server server;
+    private final AuthService authService;
+    DBServiceClient dbServiceClient;
 
-    public WebServerSimple(int port, Gson gson, TemplateProcessor templateProcessor) {
-        this.gson = gson;
+    public WebServerImpl(int port, ObjectMapper mapper, TemplateProcessor templateProcessor, AuthService authService, DBServiceClient dbServiceClient) {
+        this.mapper = mapper;
         this.templateProcessor = templateProcessor;
         server = new Server(port);
+        this.authService = authService;
+        this.dbServiceClient = dbServiceClient;
     }
 
     @Override
@@ -51,7 +63,7 @@ public class WebServerSimple implements WebServer {
 
         HandlerList handlers = new HandlerList();
         handlers.addHandler(resourceHandler);
-        handlers.addHandler(applySecurity(servletContextHandler, "/users", "/api/user/*"));
+        handlers.addHandler(applySecurity(servletContextHandler, "/clients", "/api/client/*"));
 
 
         server.setHandler(handlers);
@@ -59,6 +71,9 @@ public class WebServerSimple implements WebServer {
     }
 
     protected Handler applySecurity(ServletContextHandler servletContextHandler, String ...paths) {
+        servletContextHandler.addServlet(new ServletHolder(new LoginServlet(templateProcessor, authService)), "/login");
+        AuthorizationFilter authorizationFilter = new AuthorizationFilter();
+        Arrays.stream(paths).forEachOrdered(path -> servletContextHandler.addFilter(new FilterHolder(authorizationFilter), path, null));
         return servletContextHandler;
     }
 
@@ -72,8 +87,8 @@ public class WebServerSimple implements WebServer {
 
     private ServletContextHandler createServletContextHandler() {
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContextHandler.addServlet(new ServletHolder(new UsersServlet(templateProcessor)), "/users");
-        servletContextHandler.addServlet(new ServletHolder(new UsersApiServlet(gson)), "/api/user/*");
+        servletContextHandler.addServlet(new ServletHolder(new ClientsServlet(templateProcessor, dbServiceClient)), "/clients");
+        servletContextHandler.addServlet(new ServletHolder(new ClientsApiServlet(mapper, dbServiceClient)), "/api/client/*");
         return servletContextHandler;
     }
 }

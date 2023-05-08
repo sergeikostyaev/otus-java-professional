@@ -1,5 +1,6 @@
 package ru.otus.hibernate.crm.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class Phone {
 
     @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
+    @JsonBackReference
     private Client client;
 
     public Phone(Long id, String number) {

@@ -1,6 +1,7 @@
 package ru.otus.hibernate.crm.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class Client implements Cloneable {
 
     @OneToOne(cascade = {CascadeType.ALL})
     private Address address;
-
+    @JsonManagedReference
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "client")
     private List<Phone> phones;
 
