@@ -1,27 +1,28 @@
 package ru.otus.model;
 
 
+import jakarta.annotation.Nonnull;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "phone")
+@Table("phone")
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 public class Phone {
+    @Id
     private Long id;
+    @Nonnull
     private String number;
-    private Client client;
+
+    private Long client_id;
 
     public Phone(Long id, String number) {
         this.id = id;
         this.number = number;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
-        client.getPhones().add(this);
-    }
 }
