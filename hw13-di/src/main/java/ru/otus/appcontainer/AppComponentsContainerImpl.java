@@ -18,6 +18,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     public AppComponentsContainerImpl(Class<?> initialConfigClass) {
         processConfig(initialConfigClass);
     }
+
     private void processConfig(Class<?> configClass) {
         Object clazz = null;
         try {
@@ -31,21 +32,21 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
         Arrays.stream(configClass.getDeclaredMethods()).filter(element -> element.isAnnotationPresent(AppComponent.class))
                 .sorted(Comparator.comparingInt(element -> element.getAnnotation(AppComponent.class).order())).forEach(m -> {
-            try {
-                getArgs(m);
-                var invoked = m.invoke(finalClazz, getArgs(m));
-                appComponents.add(invoked);
-                appComponentsByName.put(m.getAnnotation(AppComponent.class).name().toLowerCase(), invoked);
-                System.out.println(m.getReturnType().getSimpleName().toLowerCase());
+                    try {
+                        getArgs(m);
+                        var invoked = m.invoke(finalClazz, getArgs(m));
+                        appComponents.add(invoked);
+                        appComponentsByName.put(m.getAnnotation(AppComponent.class).name().toLowerCase(), invoked);
+                        System.out.println(m.getReturnType().getSimpleName().toLowerCase());
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         System.out.println(appComponents.size());
     }
 
-    private Object[] getArgs(Method m){
+    private Object[] getArgs(Method m) {
         var params = m.getParameters();
         List<Object> args = new ArrayList<>();
         Arrays.stream(params).forEach(e -> args.add(appComponentsByName.get(e.getType().getSimpleName().toLowerCase())));
@@ -62,126 +63,36 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
-        var clazz = (C)appComponentsByName.get(componentClass.getSimpleName().toLowerCase());
-        if(clazz != null){
+        var clazz = (C) appComponentsByName.get(componentClass.getSimpleName().toLowerCase());
+        if (clazz != null) {
             return clazz;
-        }else{
+        } else {
             var list = appComponents.stream().filter(e -> e.getClass().isAssignableFrom(componentClass)).collect(Collectors.toList());
-            if(list.size() > 1){
+            if (list.size() > 1) {
                 throw new RuntimeException();
             }
-            return (C)list.get(0);
+            return (C) list.get(0);
         }
     }
 
     @Override
     public <C> C getAppComponent(String componentName) {
-        var object = (C)appComponentsByName.get(componentName.toLowerCase());
-        if(object == null){
+        var object = (C) appComponentsByName.get(componentName.toLowerCase());
+        if (object == null) {
             throw new RuntimeException();
         }
         return object;
     }
 
-    private void duplicateCheck(Class<?> clazz){
+    private void duplicateCheck(Class<?> clazz) {
         List<String> names = new ArrayList<>();
         Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.isAnnotationPresent(AppComponent.class)).forEach(m -> {
-            if(names.contains(m.getAnnotation(AppComponent.class).name())){
+            if (names.contains(m.getAnnotation(AppComponent.class).name())) {
                 throw new RuntimeException("Duplicate");
             }
             names.add(m.getAnnotation(AppComponent.class).name());
         });
     }
 }
-
-class App {
-
-
-
-    public static void main(String[] args) {
-
-
-        System.out.println(GameProcessor.class.isAssignableFrom(GameProcessorImpl.class));
-
-        AppComponentsContainer container = new AppComponentsContainerImpl(AppConfig.class);
-
-
-
-        GameProcessor gameProcessor = container.getAppComponent("GameProcessor");
-        gameProcessor.startGame();
-
-
-
-
-
-
-    }
-}
-
-
-//public class AppComponentsContainerImpl implements AppComponentsContainer {
-//    private final List<Object> appComponents = new ArrayList<>();
-//    private final Map<String, Object> appComponentsByName = new HashMap<>();
-//
-//    public AppComponentsContainerImpl(Class<?> initialConfigClass) {
-//        processConfig(initialConfigClass);
-//    }
-//    private void processConfig(Class<?> configClass) {
-//        Object clazz = null;
-//        try {
-//            clazz = configClass.getDeclaredConstructor().newInstance();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//        checkConfigClass(configClass);
-//        var finalClazz = clazz;
-//
-//        Arrays.stream(configClass.getDeclaredMethods()).filter(element -> element.isAnnotationPresent(AppComponent.class))
-//                .sorted(Comparator.comparingInt(element -> element.getAnnotation(AppComponent.class).order())).forEach(m -> {
-//                    try {
-//                        getArgs(m);
-//                        var invoked = m.invoke(finalClazz, getArgs(m));
-//                        appComponents.add(invoked);
-//                        appComponentsByName.put(m.getReturnType().getSimpleName().toLowerCase(), invoked);
-//                        System.out.println(m.getReturnType().getSimpleName().toLowerCase());
-//
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                });
-//        System.out.println(appComponents.size());
-//    }
-//
-//    private Object[] getArgs(Method m){
-//        var params = m.getParameters();
-//        ArrayList<Object> args = new ArrayList<>();
-//        Arrays.stream(params).forEach(e -> args.add(appComponentsByName.get(e.getType().getSimpleName().toLowerCase())));
-//
-//        return args.toArray();
-//    }
-//
-//
-//    private void checkConfigClass(Class<?> configClass) {
-//        if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
-//            throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
-//        }
-//    }
-//
-//    @Override
-//    public <C> C getAppComponent(Class<C> componentClass) {
-//        var clazz = (C)appComponentsByName.get(componentClass.getSimpleName().toLowerCase());
-//        if(clazz != null){
-//            return clazz;
-//        }else{
-//            Object o = appComponents.stream().filter(e -> e.getClass().isAssignableFrom(componentClass)).findFirst().get();
-//            return (C)o;
-//        }
-//    }
-//
-//    @Override
-//    public <C> C getAppComponent(String componentName) {
-//        return (C)appComponentsByName.get(componentName.toLowerCase());
-//    }
-//}
 
 
