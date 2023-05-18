@@ -1,30 +1,48 @@
 package ru.otus.model;
 
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import jakarta.annotation.Nonnull;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.PersistenceCreator;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(name = "client")
-public class Client implements Cloneable {
+@ToString
+@NoArgsConstructor
+public class Client {
+
+    @Id
     private Long id;
+    @Nonnull
     private String name;
+
+    @MappedCollection(idColumn = "client_id")
     private Address address;
-    private List<Phone> phones;
+
+    @MappedCollection(idColumn = "client_id")
+    private Set<Phone> phones;
 
 
-
-    public Client(String name) {
-        this.id = null;
+    public Client(Long id, String name, Address address, Set<Phone> phones) {
+        this.id = id;
         this.name = name;
+        this.address = address;
+        this.phones = phones;
+    }
+
+
+    public Client(Long id, String name, Set<Phone> phones) {
+        this.id = id;
+        this.name = name;
+        this.phones = phones;
     }
 
     public Client(Long id, String name) {
@@ -32,37 +50,16 @@ public class Client implements Cloneable {
         this.name = name;
     }
 
-    public Client(Long id, String name, Address address, List<Phone> phones) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.phones = new ArrayList<>();
-        phones.stream().forEach(p -> {
-            p.setClient(this);
-        });
-    }
-
-    @Override
-    public Client clone() {
-
-        Address copyAdress = new Address(address.getId(), address.getStreet());
-
-        List<Phone> clonedPhones = new ArrayList<>();
-        phones.stream().forEach(p ->{
-            clonedPhones.add(new Phone(p.getId(), p.getNumber()));
-        });
-
-        return new Client(this.id, this.name, copyAdress, clonedPhones);
-    }
-
     @Override
     public String toString() {
         return "Client{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", address=" + address.getStreet() +
+                ", address id=" + address.getId() +
+                ", address client_id=" + address.getClientId() +
+                ", phones=" + phones +
                 '}';
     }
-
-
 }
 
