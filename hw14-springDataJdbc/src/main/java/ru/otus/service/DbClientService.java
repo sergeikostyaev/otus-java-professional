@@ -13,4 +13,6 @@ public interface DbClientService {
 
     List<Client> findAll();
 
+    Optional<Client> getRandomClient();
+
 }

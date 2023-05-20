@@ -26,10 +26,14 @@ public class ClientRestController {
         return dbClientService.getClientById(id);
     }
 
+    @GetMapping("/client/random")
+    public Optional<Client> getRandomClient() {
+        return dbClientService.getRandomClient();
+    }
+
     @PostMapping("/client")
     public Client saveClient(@RequestBody Client client) {
         return dbClientService.saveClient(client);
     }
-
 
 }
