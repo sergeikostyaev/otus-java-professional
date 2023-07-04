@@ -1,64 +1,68 @@
 package ru.otus;
 
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 public class Main {
+    public static String FIRST_THREAD = "FIRST";
+    public static String SECOND_THREAD = "SECOND";
+    private String currentThread = "SECOND";
 
-    int counter = 0;
-    public synchronized void run() throws InterruptedException {
-        for (int i = 1; i <= 10; i++) {
-            System.out.println(Thread.currentThread().getName() + ": " + i);
-            Thread.sleep(1000);
-            notify();
-            wait();
-        }
-
-        for (int i = 9; i >= 0; i--) {
-            System.out.println(Thread.currentThread().getName() + ": " + i);
-            Thread.sleep(1000);
-            notify();
-            wait();
-        }
-    }
+    private boolean addition = true;
 
 
-
-
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
         Main main = new Main();
 
-        Thread thread1 = new Thread(new Thread1(main));
-        Thread thread2 = new Thread(new Thread2(main));
+        Thread thread1 = new Thread(() -> main.action(FIRST_THREAD));
+        Thread thread2 = new Thread(() -> main.action(SECOND_THREAD));
+        thread1.setName("thread 1");
+        thread2.setName("thread 2");
 
-        thread1.setName("thread1");
-        thread2.setName("thread2");
-
-        thread1.start();
         thread2.start();
-
+        thread1.start();
+       ;
     }
-}
 
-@RequiredArgsConstructor
-class Thread1 extends Thread{
-    final Main main;
+    public synchronized void action(String message) {
+        int number = 1;
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                while (currentThread.equals(message)) {
+                    wait();
+                }
 
-    @SneakyThrows
-    @Override
-    public void run() {
-        main.run();
+                System.out.println(Thread.currentThread().getName() + ": " + number);
+                sleep();
+
+                if(number == 10){
+                    addition = false;
+                }else if(number == 1){
+                    addition = true;
+                }
+
+                if (addition) {
+                    number++;
+                } else {
+                    number--;
+                }
+
+                currentThread = message;
+
+                notify();
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
+        }
     }
-}
 
-@RequiredArgsConstructor
-class Thread2 extends Thread{
-    final Main main;
-
-    @SneakyThrows
-    @Override
-    public void run() {
-        main.run();
+    private static void sleep() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
